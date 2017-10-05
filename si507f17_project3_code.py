@@ -14,6 +14,19 @@ import requests
 
 # Write your code for Part 0 here.
 
+try:
+  cat_image = open("gallery.html",'r').text
+except:
+  cat_image = requests.get("http://newmantaylor.com/gallery.html").text
+  f = open("gallery.html",'w')
+  f.write(cat_image)
+  f.close()
+
+soup = BeautifulSoup(cat_image, 'html.parser')
+
+all_imgs = soup.find_all('img')
+# for image in all_imgs:
+    # print(image.get('alt',"No alternative text provided!"))
 
 ######### PART 1 #########
 
@@ -28,13 +41,14 @@ import requests
 # We've provided comments to guide you through the complex try/except, but if you prefer to build up the code to do this scraping and caching yourself, that is OK.
 
 try:
-  nps_data = open("nps_gov_data.html",'r').text
+  nps_data = open("nps_gov_data.html",'r')
 except:
-  nps_data = requests.get("https://www.nps.gov/state/mt/index.htm").text
+  nps_data = requests.get("https://www.nps.gov/index.htm")
   f = open("nps_gov_data.html",'w')
   f.write(nsp_data)
   f.close()
 
+nps_soup = BeautifulSoup(nps_data, 'html.parser')
 
 
 
