@@ -41,15 +41,17 @@ all_imgs = soup.find_all('img')
 # We've provided comments to guide you through the complex try/except, but if you prefer to build up the code to do this scraping and caching yourself, that is OK.
 
 try:
-  nps_data = open("nps_gov_data.html",'r')
+  nps_data = open("nps_gov_data.html",'r').read()
 except:
-  nps_data = requests.get("https://www.nps.gov/index.htm")
+  nps_data = requests.get("https://www.nps.gov/index.htm").text
   f = open("nps_gov_data.html",'w')
-  f.write(nsp_data)
+  f.write(nps_data)
   f.close()
 
 nps_soup = BeautifulSoup(nps_data, 'html.parser')
 
+get_state_data = nps_soup.find("ul",{"class":"dropdown-menu SearchBar-keywordSearch"})
+# print (get_state_data)
 
 
 # Get individual states' data...
@@ -60,16 +62,31 @@ nps_soup = BeautifulSoup(nps_data, 'html.parser')
 # in a variable or data structure
 # that the rest of the program can access.
 
+
+state_list=['Michigan','Arkansas','California']
+state_links = [nps_soup.find('a', text=x)['href'] for x in state_list]
+state_elems=[]
+for elem in state_links:
+    state_elems.append("https://www.nps.gov" + elem)
+
+# print (state_elems)
+# file_list=['arkansas_data.html','california_data.html','michigan_data.html']
+
 # TRY:
 # To open and read all 3 of the files
-
 # But if you can't, EXCEPT:
-
 # Create a BeautifulSoup instance of main page data
 # Access the unordered list with the states' dropdown
+try:
+    arkansas_data = open("arkansas_data.html",'r').read()
+    california_data = open("california_data.html",'r').read()
+    michigan_data = open("michigan_data.html",'r').read()
+except:
+    soup = BeautifulSoup(nps_data,'html.parser')
+    ul = soup.find_all("ul"{"class":"dropdown-menu SearchBar-keywordSearch"})
+    for a in ul:
 
 # Get a list of all the li (list elements) from the unordered list, using the BeautifulSoup find_all method
-
 # Use a list comprehension or accumulation to get all of the 'href' attributes of the 'a' tag objects in each li, instead of the full li objects
 
 # Filter the list of relative URLs you just got to include only the 3 you want: AR's, CA's, MI's, using the accumulator pattern & conditional statements
