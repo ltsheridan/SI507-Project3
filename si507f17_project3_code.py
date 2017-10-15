@@ -131,6 +131,9 @@ mich_soup = BeautifulSoup(michigan_data,'html.parser')
 ark_soup = BeautifulSoup(arkansas_data, 'html.parser')
 cal_soup = BeautifulSoup(california_data, 'html.parser')
 
+
+# print(mich_soup.prettify)
+
 # HINT: remember the method .prettify() on a BeautifulSoup object -- might be useful for your investigation! So, of course, might be .find or .find_all, etc...
 
 # HINT: Remember that the data you saved is data that includes ALL of the parks/sites/etc in a certain state, but you want the class to represent just ONE park/site/monument/lakeshore.
@@ -145,17 +148,35 @@ cal_soup = BeautifulSoup(california_data, 'html.parser')
 ## Define your class NationalSite here:
 
 class NationalSite(object):
-    def __init__(self):
-        self.location =
-        self.name =
-        self.park_type =
-        self.description =
+    def __init__(self, object):
+        self.location = object.find("h4").text
+        self.name = object.find("h3").text
+        try:
+            self.park_type = object.find("h2").text
+        except:
+            self.park_type = None
+        try:
+            self.description = object.find("p").text
+        except:
+            self.description = ""
+        # self.mailing_address = object.find("div",{"itemprop":"mailing-address"}).text
 
+    def __str__(self):
+        return "{} | {}".format(self.name, self.location)
+
+    # def get_mailing_address(self):
+    #     return self.mailing_address
+
+    def __contains__(self, x):
+        if x in self.name:
+            return True
+        else:
+            return False
 
 
 
 ## Recommendation: to test the class, at various points, uncomment the following code and invoke some of the methods / check out the instance variables of the test instance saved in the variable sample_inst:
-
+#
 f = open("sample_html_of_park.html",'r')
 soup_park_inst = BeautifulSoup(f.read(), 'html.parser') # an example of 1 BeautifulSoup instance to pass into your class
 sample_inst = NationalSite(soup_park_inst)
