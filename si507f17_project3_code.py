@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import unittest
 import requests
+import csv
 
 #########
 ## Instr note: the outline comments will stay as suggestions, otherwise it's too difficult.
@@ -77,7 +78,7 @@ for elem in state_elems:
     if "ca" in elem:
         cal_url = elem
 
-# print (mich_url)
+print (mich_url)
 # TRY:
 # To open and read all 3 of the files
 # But if you can't, EXCEPT:
@@ -152,7 +153,7 @@ class NationalSite:
         try:
             self.location = object.find("h4").text
         except:
-            self.location == "Empty"
+            self.location = ""
         self.name = object.find("h3").text
         try:
             self.park_type = object.find("h2").text
@@ -162,14 +163,21 @@ class NationalSite:
             self.description = object.find("p").text
         except:
             self.description = ""
-        address = object.find("div",{"itemprop":"address"})
-
+        self.link = object.find("a").get("href")
+        self.park_link = "https://www.nps.gov" + self.link + "index.htm"
+        print(self.park_link)
 
     def __str__(self):
         return "{} | {}".format(self.name, self.location)
 
     def get_mailing_address(self):
-        return address
+        site_html = requests.get(self.park_link).text
+        site_soup = BeautifulSoup(site_html, 'html.parser')
+        address = site_soup.find("div",{"class":"mailing-address"})
+        mail_stop = address.find('div', {'itemprop':'address'}).text.strip()
+        real_address = mail_stop.replace("\n","/")
+        print(real_address)
+        return (real_address)
 
     def __contains__(self, x):
         if x in self.name:
@@ -185,8 +193,6 @@ class NationalSite:
 f = open("sample_html_of_park.html",'r')
 soup_park_inst = BeautifulSoup(f.read(), 'html.parser') # an example of 1 BeautifulSoup instance to pass into your class
 sample_inst = NationalSite(soup_park_inst)
-#print(sample_inst)
-print(sample_inst)
 f.close()
 
 
@@ -198,32 +204,31 @@ f.close()
 # HINT: Get a Python list of all the HTML BeautifulSoup instances that represent each park, for each state.
 
 
-park_list=[]
+michigan_natl_sites=[]
 mich_parks = mich_soup.find("ul",{"id":"list_parks"})
 MI_park_item = mich_parks.find_all("li",{"class":"clearfix"})
-# print (park_item)
-# print(mich_parks)
+
 for park in MI_park_item:
     soup = BeautifulSoup(str(park),'html.parser')
     mich_national=NationalSite(soup)
-    park_list.append(mich_national)
+    michigan_natl_sites.append(mich_national)
 
-
+arkansas_natl_sites=[]
 ark_parks = ark_soup.find("ul",{"id":"list_parks"})
 AR_park_item = ark_parks.find_all("li",{"class":"clearfix"})
 for park in AR_park_item:
     soup = BeautifulSoup(str(park),'html.parser')
     ark_national=NationalSite(soup)
-    park_list.append(ark_national)
+    arkansas_natl_sites.append(ark_national)
 
-
+california_natl_sites=[]
 cal_parks = cal_soup.find("ul",{"id":"list_parks"})
 CA_park_item = cal_parks.find_all("li",{"class":"clearfix"})
 for park in CA_park_item:
     soup = BeautifulSoup(str(park),'html.parser')
     cal_national=NationalSite(soup)
-    park_list.append(cal_national)
-print(park_list)
+    california_natl_sites.append(cal_national)
+# print(california_natl_sites)
 
 # ##Code to help you test these out:
 # for p in california_natl_sites:
@@ -242,3 +247,14 @@ print(park_list)
 ## Note that running this step for ALL your data make take a minute or few to run -- so it's a good idea to test any methods/functions you write with just a little bit of data, so running the program will take less time!
 
 ## Also remember that IF you have None values that may occur, you might run into some problems and have to debug for where you need to put in some None value / error handling!
+first_csv = open("arkansas.csv","w")
+first_csv.write("Name,Type\n")
+for x in arkansas_natl_sites:
+	first_csv.write('{},{}\n'.format(x.name,x.park_type))
+first_csv.close()
+
+# second_csv = open("michigan.csv","w")
+# second_csv.write("Name,Location,Type,Address,Description\n")
+# for x in michigan_natl_sites:
+# 	second_csv.write('{},{},{},{},{}\n'.format(x.name,x.park_type,x.location,x.description,x.get_mailing_address()))
+# second_csv.close()
