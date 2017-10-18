@@ -78,7 +78,7 @@ for elem in state_elems:
     if "ca" in elem:
         cal_url = elem
 
-print (mich_url)
+# print (mich_url)
 # TRY:
 # To open and read all 3 of the files
 # But if you can't, EXCEPT:
@@ -165,7 +165,6 @@ class NationalSite:
             self.description = ""
         self.link = object.find("a").get("href")
         self.park_link = "https://www.nps.gov" + self.link + "index.htm"
-        print(self.park_link)
 
     def __str__(self):
         return "{} | {}".format(self.name, self.location)
@@ -176,7 +175,6 @@ class NationalSite:
         address = site_soup.find("div",{"class":"mailing-address"})
         mail_stop = address.find('div', {'itemprop':'address'}).text.strip()
         real_address = mail_stop.replace("\n","/")
-        print(real_address)
         return (real_address)
 
     def __contains__(self, x):
@@ -228,7 +226,7 @@ for park in CA_park_item:
     soup = BeautifulSoup(str(park),'html.parser')
     cal_national=NationalSite(soup)
     california_natl_sites.append(cal_national)
-# print(california_natl_sites)
+
 
 # ##Code to help you test these out:
 # for p in california_natl_sites:
@@ -258,9 +256,3 @@ def csv_func(filename, listname):
 csv_func("arkansas.csv", arkansas_natl_sites)
 csv_func("michigan.csv",michigan_natl_sites)
 csv_func("california.csv",california_natl_sites)
-
-# first_csv = open("arkansas.csv","w")
-# first_csv.write("Name,Type\n")
-# for x in arkansas_natl_sites:
-# 	first_csv.write('{},{}\n'.format(x.name,x.type))
-# first_csv.close()
