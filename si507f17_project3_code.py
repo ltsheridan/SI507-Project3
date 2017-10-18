@@ -155,10 +155,10 @@ class NationalSite:
         except:
             self.location = ""
         self.name = object.find("h3").text
-        try:
-            self.park_type = object.find("h2").text
-        except:
-            self.park_type = None
+        if object.find("h2").text == '':
+            self.type = "None"
+        else:
+            self.type = object.find("h2").text
         try:
             self.description = object.find("p").text
         except:
@@ -247,14 +247,20 @@ for park in CA_park_item:
 ## Note that running this step for ALL your data make take a minute or few to run -- so it's a good idea to test any methods/functions you write with just a little bit of data, so running the program will take less time!
 
 ## Also remember that IF you have None values that may occur, you might run into some problems and have to debug for where you need to put in some None value / error handling!
-first_csv = open("arkansas.csv","w")
-first_csv.write("Name,Type\n")
-for x in arkansas_natl_sites:
-	first_csv.write('{},{}\n'.format(x.name,x.park_type))
-first_csv.close()
+def csv_func(filename, listname):
+    with open(filename, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Name","Location","Type","Address","Description"])
+        for x in listname:
+            description_clean = x.description.strip()
+            writer.writerow([x.name, x.location, x.type, x.get_mailing_address(), description_clean])
 
-# second_csv = open("michigan.csv","w")
-# second_csv.write("Name,Location,Type,Address,Description\n")
-# for x in michigan_natl_sites:
-# 	second_csv.write('{},{},{},{},{}\n'.format(x.name,x.park_type,x.location,x.description,x.get_mailing_address()))
-# second_csv.close()
+csv_func("arkansas.csv", arkansas_natl_sites)
+csv_func("michigan.csv",michigan_natl_sites)
+csv_func("california.csv",california_natl_sites)
+
+# first_csv = open("arkansas.csv","w")
+# first_csv.write("Name,Type\n")
+# for x in arkansas_natl_sites:
+# 	first_csv.write('{},{}\n'.format(x.name,x.type))
+# first_csv.close()
